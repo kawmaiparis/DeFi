@@ -12,6 +12,33 @@ const Pushable = require("pull-pushable");
 const p = Pushable();
 let moonPeerId;
 
+const createNode = async () => {
+    const peerInfo = await PeerInfo.create();
+
+    peerInfo.multiaddrs.add("/ip4/127.0.0.1/tcp/0");
+    const node = await Libp2p.create({
+        peerInfo,
+        modules: {
+            transport: [TCP],
+            streamMuxer: [Multiplex],
+            connEncryption: [SECIO],
+            peerDiscovery: [MulticastDNS]
+        },
+        config: {
+            peerDiscovery: {
+                mdns: {
+                    interval: 20e3,
+                    enabled: true
+                }
+            }
+        }
+    });
+
+    await node.start();
+    return node;
+};
+
+const hello = await createNode();
 async.parallel(
     [
         callback => {

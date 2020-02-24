@@ -1,5 +1,3 @@
-/* Same as Peach but dont init connection - act as contractors */
-
 "use strict";
 /* eslint-disable no-console */
 
@@ -73,12 +71,15 @@ const handleStart = async node => {
             "  Someone found me!",
             chalk.blue(`on: ${peerInfo.id.toB58String()}`)
         );
+        console.log(
+            "\n" + emoji.get("moon"),
+            chalk.green(" Waiting for message... ")
+        );
     });
 
     // when someone proposes to me
     node.handle("/propose/1.0.0", (protocol, conn) => {
         // link p pushable, to this connection
-        console.log("yo");
         pull(p, conn);
 
         // handle data from earth
@@ -113,62 +114,74 @@ const handleStart = async node => {
         );
         knownPeers.push(peerInfo);
     });
+
+    setTimeout(proposeToAll, 1000, node, knownPeers);
 };
 
 const proposeToAll = async (node, knownPeers) => {
     console.log(chalk.red.bold("Proposing to All "));
     knownPeers.forEach(async peer => {
-        await propose(node, peer);
+        let result = await propose(node, peer);
+        console.log("hello");
+        console.log(result);
     });
 };
 
 const propose = async (node, peer) => {
-    peer.multiaddrs.add("/ip4/127.0.0.1/tcp/10333");
     console.log(`  dialing to ${peer.id.toB58String()}`);
-    node.dialProtocol(peer, "/propose/1.0.0", (err, conn) => {
-        if (err) {
-            throw err;
-        }
-        console.log(
-            "\n dialing...",
-            chalk.blue(" Earth dialed to Moon on protocol: /propose/1.0.0")
-        );
+    peer.multiaddrs.add("/ip4/127.0.0.1/tcp/10333");
+    return new Promise((resolve, reject) => {
+        console.log("hello");
+        node.dialProtocol(peer, "/propose/1.0.0", (err, conn) => {
+            if (err) {
+                throw err;
+            }
+            console.log(
+                chalk.blue(
+                    " dialed successfuly on protocol: " +
+                        chalk.blue("/propose/1.0.0")
+                )
+            );
 
-        // Write operation. Data sent as a buffer
-        pull(p, conn);
-        // Sink, data converted from buffer to utf8 string
-        pull(
-            conn,
-            pull.map(data => {
-                return data.toString("utf8").replace("\n", "");
-            }),
-            pull.drain(async data => {
-                // gotta check sender
-                if (data == "Accept") {
-                    console.log("... Proposal Accepted");
-                    await invest();
-                } else if (data == "Reject") {
-                    console.log("... Proposal Rejected");
-                } else {
-                    console.log("Invalid response XXX");
-                }
-            })
-        );
+            // Write operation. Data sent as a buffer"
+            pull(p, conn);
+            // Sink, data converted from buffer to utf8 string
+            pull(
+                conn,
+                pull.map(data => {
+                    return data.toString("utf8").replace("\n", "");
+                }),
+                pull.drain(async data => {
+                    // gotta check sender
+                    if (data == "Accept") {
+                        console.log("... Proposal Accepted");
+                        await invest();
+                    } else if (data == "Reject") {
+                        console.log("... Proposal Rejected");
+                    } else {
+                        console.log("Invalid response XXX");
+                    }
+                })
+            );
 
-        function invest() {
-            console.log("....... i n v e s t i n g .......");
-            const data = "done";
-            p.push(data);
-        }
+            function invest() {
+                console.log("....... i n v e s t i n g .......");
+                const data = "done";
+                p.push(data);
+            }
 
-        process.stdin.setEncoding("utf8");
-        process.openStdin().on("data", chunk => {
-            var data = chunk.toString();
-            data = "Proposal";
-            console.log("Sending Proposal...");
-            p.push(data);
+            process.stdin.setEncoding("utf8");
+            process.openStdin().on("data", chunk => {
+                var data = chunk.toString();
+                data = "Proposal";
+                console.log("Sending Proposal...");
+                p.push(data);
+            });
+
+            resolve("result");
         });
     });
+    console.log("after dial");
 };
 // main
 (async () => {
