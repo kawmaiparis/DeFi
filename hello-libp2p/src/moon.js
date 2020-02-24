@@ -11,6 +11,7 @@ const chalk = require("chalk");
 const emoji = require("node-emoji");
 
 PeerId.createFromJSON(require("./ids/moonId"), (err, peerId) => {
+    console.log("hello");
     if (err) {
         throw err;
     }
@@ -37,31 +38,33 @@ PeerId.createFromJSON(require("./ids/moonId"), (err, peerId) => {
             );
         });
 
-        nodeListener.handle("/invest/1.0.0", (protocol, conn) => {
-            console.log("hello");
-
+        nodeListener.handle("/propose/1.0.0", (protocol, conn) => {
             // link p pushable, to this connection
             pull(p, conn);
 
-            // handle console stream
+            // handle data from earth
             pull(
                 conn,
                 pull.map(data => {
                     return data.toString("utf8").replace("\n", "");
                 }),
-                pull.drain(console.log)
+                pull.drain(data => {
+                    if (data == "Proposal") {
+                        console.log("Proposal received");
+                        // gotta add reject()
+                        accept();
+                    } else if (data == "done") {
+                        console.log("Invest done!");
+                    } else {
+                        console.log("Invalid response XXX");
+                    }
+                })
             );
 
-            process.stdin.setEncoding("utf8");
-            process.openStdin().on("data", chunk => {
-                var data =
-                    `${chalk.blue("Message received from Moon: ")}\n\n` +
-                    chunk.toString() +
-                    `\n${emoji.get("incoming_envelope")}
-                ${chalk.blue("  Send message from Earth:")}`;
-
+            function accept() {
+                const data = "Accept";
                 p.push(data);
-            });
+            }
         });
 
         console.log(

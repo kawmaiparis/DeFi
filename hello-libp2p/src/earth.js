@@ -60,7 +60,7 @@ async.parallel(
 
             nodeDialer.dialProtocol(
                 moonPeerInfo,
-                "/invest/1.0.0",
+                "/propose/1.0.0",
                 (err, conn) => {
                     if (err) {
                         throw err;
@@ -68,13 +68,10 @@ async.parallel(
                     console.log(
                         "\n" + emoji.get("large_blue_circle"),
                         chalk.blue(
-                            " Earth dialed to Moon on protocol: /chat/1.0.0"
+                            " Earth dialed to Moon on protocol: /propose/1.0.0"
                         )
                     );
-                    console.log(`${emoji.get("incoming_envelope")}
-                         ${chalk.bold(
-                             `Type a message and press enter. See what happens...`
-                         )}`);
+
                     // Write operation. Data sent as a buffer
                     pull(p, conn);
                     // Sink, data converted from buffer to utf8 string
@@ -83,20 +80,30 @@ async.parallel(
                         pull.map(data => {
                             return data.toString("utf8").replace("\n", "");
                         }),
-                        pull.drain(console.log)
+                        pull.drain(async data => {
+                            // gotta check sender
+                            if (data == "Accept") {
+                                console.log("... Proposal Accepted");
+                                await invest();
+                            } else if (data == "Reject") {
+                                console.log("... Proposal Rejected");
+                            } else {
+                                console.log("Invalid response XXX");
+                            }
+                        })
                     );
+
+                    function invest() {
+                        console.log("....... i n v e s t i n g .......");
+                        const data = "done";
+                        p.push(data);
+                    }
 
                     process.stdin.setEncoding("utf8");
                     process.openStdin().on("data", chunk => {
                         var data = chunk.toString();
-                        var data =
-                            `${chalk.blue(
-                                "Message received from Earth: "
-                            )}\n\n` +
-                            chunk.toString() +
-                            `\n${emoji.get("incoming_envelope")}
-                ${chalk.blue("  Send message from Moon:")}`;
-
+                        data = "Proposal";
+                        console.log("Sending Proposal...");
                         p.push(data);
                     });
                 }
