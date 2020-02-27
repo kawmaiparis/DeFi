@@ -10,8 +10,10 @@
     "author": "",
     "license": "ISC",
     "dependencies": {
+        "@makerdao/dai": "^0.26.0",
         "@nodeutils/defaults-deep": "^1.1.0",
         "async": "^3.2.0",
+        "libp2p": "^0.27.3",
         "libp2p-crypto": "^0.17.2",
         "libp2p-crypto-secp256k1": "^0.4.1",
         "libp2p-mdns": "^0.13.3",
@@ -20,7 +22,9 @@
         "libp2p-tcp": "^0.14.3",
         "multiaddr": "^7.3.1",
         "pull-pushable": "^2.2.0",
-        "pull-stream": "^3.6.14"
+        "pull-stream": "^3.6.9",
+        "simple-hashtable": "^1.0.0",
+        "web3": "^1.2.6"
     },
     "devDependencies": {
         "chalk": "^3.0.0",

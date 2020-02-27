@@ -7,7 +7,8 @@ const SECIO = require("libp2p-secio");
 const Multiplex = require("libp2p-mplex");
 const MulticastDNS = require("libp2p-mdns");
 const chalk = require("chalk");
-const emoji = require("node-emoji");
+
+const { stdinToStream, streamToConsole } = require("./stream");
 
 const createNode = async () => {
     const peerInfo = await PeerInfo.create();

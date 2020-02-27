@@ -10,7 +10,12 @@ const chalk = require("chalk");
 const emoji = require("node-emoji");
 const Pushable = require("pull-pushable");
 const p = Pushable();
-let moonPeerId;
+const Libp2p = require("libp2p");
+const TCP = require("libp2p-tcp");
+
+const Multiplex = require("libp2p-mplex");
+const SECIO = require("libp2p-secio");
+const MulticastDNS = require("libp2p-mdns");
 
 const createNode = async () => {
     const peerInfo = await PeerInfo.create();
@@ -38,103 +43,72 @@ const createNode = async () => {
     return node;
 };
 
-const hello = await createNode();
-async.parallel(
-    [
-        callback => {
-            PeerId.createFromJSON(
-                require("./ids/earthId"),
-                (err, earthPeerId) => {
-                    if (err) {
-                        throw err;
-                    }
-                    callback(null, earthPeerId);
+const handleStart = nodeDialer => {
+    console.log(
+        emoji.get("large_blue_circle"),
+        chalk.blue(" Earth Ready "),
+        emoji.get("headphones"),
+        chalk.blue(" Listening on: ")
+    );
+
+    let moonPeerInfo;
+
+    nodeDialer.on("peer:discovery", peerInfo => {
+        console.log(
+            "  I found someone! on:",
+            chalk.blue(`${peerInfo.id.toB58String()}`)
+        );
+        moonPeerInfo = peerInfo;
+    });
+
+    setTimeout(async () => {
+        const { stream, protocol } = await nodeDialer.dialProtocol(
+            moonPeerInfo,
+            "/propose/1.0.0"
+        );
+        console.log(
+            "\n" + emoji.get("large_blue_circle"),
+            chalk.blue(" Earth dialed to Moon on protocol: /propose/1.0.0")
+        );
+
+        // Write operation. Data sent as a buffer
+        pull(p, protocol);
+        // Sink, data converted from buffer to utf8 string
+        pull(
+            protocol,
+            pull.map(data => {
+                return data.toString("utf8").replace("\n", "");
+            }),
+            pull.drain(async data => {
+                // gotta check sender
+                if (data == "Accept") {
+                    console.log("... Proposal Accepted");
+                    await invest();
+                } else if (data == "Reject") {
+                    console.log("... Proposal Rejected");
+                } else {
+                    console.log("Invalid response XXX");
                 }
-            );
-        },
-        callback => {
-            PeerId.createFromJSON(
-                require("./ids/moonId"),
-                (err, moonPeerId) => {
-                    if (err) {
-                        throw err;
-                    }
-                    callback(null, moonPeerId);
-                }
-            );
+            })
+        );
+
+        function invest() {
+            console.log("....... i n v e s t i n g .......");
+            const data = "done";
+            p.push(data);
         }
-    ],
-    (err, ids) => {
-        if (err) throw err;
-        const earthPeerInfo = new PeerInfo(ids[0]);
-        earthPeerInfo.multiaddrs.add("/ip4/127.0.0.1/tcp/0");
-        const nodeDialer = new Node({ peerInfo: earthPeerInfo });
 
-        const moonPeerInfo = new PeerInfo(ids[1]);
-        moonPeerId = ids[1];
-        moonPeerInfo.multiaddrs.add("/ip4/127.0.0.1/tcp/10333");
-        nodeDialer.start(err => {
-            if (err) {
-                throw err;
-            }
-
-            console.log(
-                emoji.get("large_blue_circle"),
-                chalk.blue(" Earth Ready "),
-                emoji.get("headphones"),
-                chalk.blue(" Listening on: ")
-            );
-
-            nodeDialer.dialProtocol(
-                moonPeerInfo,
-                "/propose/1.0.0",
-                (err, conn) => {
-                    if (err) {
-                        throw err;
-                    }
-                    console.log(
-                        "\n" + emoji.get("large_blue_circle"),
-                        chalk.blue(
-                            " Earth dialed to Moon on protocol: /propose/1.0.0"
-                        )
-                    );
-
-                    // Write operation. Data sent as a buffer
-                    pull(p, conn);
-                    // Sink, data converted from buffer to utf8 string
-                    pull(
-                        conn,
-                        pull.map(data => {
-                            return data.toString("utf8").replace("\n", "");
-                        }),
-                        pull.drain(async data => {
-                            // gotta check sender
-                            if (data == "Accept") {
-                                console.log("... Proposal Accepted");
-                                await invest();
-                            } else if (data == "Reject") {
-                                console.log("... Proposal Rejected");
-                            } else {
-                                console.log("Invalid response XXX");
-                            }
-                        })
-                    );
-
-                    function invest() {
-                        console.log("....... i n v e s t i n g .......");
-                        const data = "done";
-                        p.push(data);
-                    }
-
-                    process.stdin.setEncoding("utf8");
-                    process.openStdin().on("data", chunk => {
-                        var data = chunk.toString();
-                        data = "Proposal";
-                        console.log("Sending Proposal...");
-                        p.push(data);
-                    });
-                }
-            );
+        process.stdin.setEncoding("utf8");
+        process.openStdin().on("data", chunk => {
+            var data = chunk.toString();
+            data = "Proposal";
+            console.log("Sending Proposal...");
+            p.push(data);
         });
-    }
-);
+    }, 2000);
+};
+
+(async () => {
+    const node = await createNode();
+    await handleStart(node);
+})();

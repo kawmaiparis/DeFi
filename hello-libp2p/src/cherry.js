@@ -25,6 +25,8 @@ const SECIO = require("libp2p-secio");
 // for finding peers in network without hardcoding
 const MulticastDNS = require("libp2p-mdns");
 
+const { stdinToStream, streamToConsole } = require("./stream");
+
 const createNode = async () => {
     const peerInfo = await PeerInfo.create();
 
@@ -51,21 +53,22 @@ const createNode = async () => {
     return node;
 };
 
-const handleStart = async node => {
-    console.log("node has started (true/false):", node.isStarted());
-    console.log(chalk.red.bold("Listening on:"));
-
-    const knownPeers = [];
-    const peerInfo = node.peerInfo;
-
+const logAddress = node => {
     node.peerInfo.multiaddrs.forEach(ma =>
         console.log(
             "  " +
                 ma.toString() +
                 "/p2p/" +
-                chalk.blue(peerInfo.id.toB58String())
+                chalk.blue(node.peerInfo.id.toB58String())
         )
     );
+};
+
+const handleStart = async node => {
+    console.log("node has started (true/false):", node.isStarted());
+    console.log(chalk.red.bold("Listening on:"));
+    logAddress(node);
+    const knownPeers = [];
 
     // when someone finds me
     node.on("peer:connect", peerInfo => {
@@ -75,101 +78,22 @@ const handleStart = async node => {
         );
     });
 
-    // when someone proposes to me
-    node.handle("/propose/1.0.0", (protocol, conn) => {
-        // link p pushable, to this connection
-        console.log("yo");
-        pull(p, conn);
-
-        // handle data from earth
-        pull(
-            conn,
-            pull.map(data => {
-                return data.toString("utf8").replace("\n", "");
-            }),
-            pull.drain(data => {
-                if (data == "Proposal") {
-                    console.log("Proposal received");
-                    accept();
-                } else if (data == "done") {
-                    console.log("Invest done!");
-                } else {
-                    console.log("Invalid response XXX");
-                }
-            })
-        );
-
-        function accept() {
-            const data = "Accept";
-            p.push(data);
-        }
+    await node.handle("/propose/1.0.0", async ({ stream }) => {
+        console.log(chalk.red.bold("Listening on protocol /propose/1.0.0:"));
+        stdinToStream(stream);
+        streamToConsole(stream);
     });
 
     // when I find someone - add them to my known list
-    node.on("peer:discovery", peerInfo => {
-        console.log(
-            "  I found someone!",
-            chalk.blue(` on: ${peerInfo.id.toB58String()}`)
-        );
-        knownPeers.push(peerInfo);
-    });
+    // node.on("peer:discovery", peerInfo => {
+    //     console.log(
+    //         "  I found someone!",
+    //         chalk.blue(` on: ${peerInfo.id.toB58String()}`)
+    //     );
+    //     knownPeers.push(peerInfo);
+    // });
 };
 
-const proposeToAll = async (node, knownPeers) => {
-    console.log(chalk.red.bold("Proposing to All "));
-    knownPeers.forEach(async peer => {
-        await propose(node, peer);
-    });
-};
-
-const propose = async (node, peer) => {
-    peer.multiaddrs.add("/ip4/127.0.0.1/tcp/10333");
-    console.log(`  dialing to ${peer.id.toB58String()}`);
-    node.dialProtocol(peer, "/propose/1.0.0", (err, conn) => {
-        if (err) {
-            throw err;
-        }
-        console.log(
-            "\n dialing...",
-            chalk.blue(" Earth dialed to Moon on protocol: /propose/1.0.0")
-        );
-
-        // Write operation. Data sent as a buffer
-        pull(p, conn);
-        // Sink, data converted from buffer to utf8 string
-        pull(
-            conn,
-            pull.map(data => {
-                return data.toString("utf8").replace("\n", "");
-            }),
-            pull.drain(async data => {
-                // gotta check sender
-                if (data == "Accept") {
-                    console.log("... Proposal Accepted");
-                    await invest();
-                } else if (data == "Reject") {
-                    console.log("... Proposal Rejected");
-                } else {
-                    console.log("Invalid response XXX");
-                }
-            })
-        );
-
-        function invest() {
-            console.log("....... i n v e s t i n g .......");
-            const data = "done";
-            p.push(data);
-        }
-
-        process.stdin.setEncoding("utf8");
-        process.openStdin().on("data", chunk => {
-            var data = chunk.toString();
-            data = "Proposal";
-            console.log("Sending Proposal...");
-            p.push(data);
-        });
-    });
-};
 // main
 (async () => {
     const node = await createNode();
