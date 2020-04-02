@@ -16,9 +16,14 @@ async function hello() {
 
 async function invest(PRIVATE_KEY, EthToDeposit, DaiToDraw) {
     try {
-        const maker = await Maker.create("http", {
+        // const maker = await Maker.create("http", {
+        //     privateKey: PRIVATE_KEY,
+        //     url: URL
+        // });
+
+        const maker = await Maker.create("test", {
             privateKey: PRIVATE_KEY,
-            url: URL
+            url: "http://127.0.0.1:7545"
         });
 
         // const dai = maker.service("token").getToken("DAI");
@@ -87,7 +92,7 @@ async function main() {
     await payback(PRIVATE_KEY, 0.1);
 }
 
-main();
+// main();
 
 async function smartMain() {
     const web3 = await new Web3("http://localhost:7545");

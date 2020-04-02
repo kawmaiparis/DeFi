@@ -109,7 +109,7 @@ const handleStart = async node => {
                             console.log("> " + data);
                             if (data.substring(0, 6) === "accept") {
                                 const amount = data.substring(7);
-                                console.log("amount detected: " + amount);
+                                console.log("  amount detected: " + amount);
 
                                 hashtable.put(peer, amount);
                                 await node.unhandle("/propose/1.0.0");
@@ -118,7 +118,7 @@ const handleStart = async node => {
                                     chalk.red.bold("Protocol Unhandled")
                                 );
                                 console.log(chalk.red.bold("Hanging up"));
-                                console.log(chalk.yellow.bold("Investing:"));
+                                console.log(chalk.yellow.bold("\nInvesting:"));
                                 await invest(PRIVATE_KEY, 0.02, 0.1);
                             }
                         }

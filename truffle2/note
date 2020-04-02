@@ -1,0 +1,52 @@
+contract InvestmentAgreement {
+	bool alice_committed = false;
+	bool bob_committed = false;
+​
+	address maker_contract = "0x....";
+​
+	// precondition G
+	fun deposit () {
+		require(msg.sender == Alice || msg.sender == Bob);
+		require(msg.value > 1 ETH);
+​
+		if (msg.sender == Alice) {
+			alice_committed = true;
+		}
+		if (msg.sender == Bob) {
+			bob_committed = true;
+		}
+	}
+​
+	// contract term 1
+	fun term_invest () {
+		require(alice_committed && bob_committed);
+​
+		// open a cdp
+		maker_contract.open_cdp();
+		// deposit the ETH with the contract's balance
+		maker_contract.deposit(self.balance);
+		// generate the Dai
+		maker_contract.draw_dai(150);
+		// deposit Dai into the DSR
+		maker_contract.deposit_dsr(150);
+	}
+​
+	// contract term 2
+	fun term_exit () {
+		require(alice_committed && bob_committed);
+		
+		// check if profit his high enough to exit
+		uint current_profit = maker_contract.get_dai_return();
+		require(current_profit > 5);
+		
+		// leave maker
+		maker_contract.exit_dsr();
+		maker_contract.exit_cdp();
+		// at this point we get the 2 ETH we have deposited plus the 5 Dai profit
+		// transfer money to alice and bob
+		alice.transfer(1 ETH);
+		alice.transfer(2.5 Dai);
+		bob.transfer(1 ETH);
+		bob.transfer(2.5 Dai);
+	}
+}
