@@ -1,5 +1,9 @@
 pragma solidity >=0.4.21 <0.7.0;
 
+import "./../src/cdp.js" as CDP;
+
+
+// import "https://github.com/makerdao/dss-proxy-actions/blob/master/src/DssProxyActions.sol";
 
 contract Agreement {
     bool private alice_committed = false;
@@ -10,10 +14,10 @@ contract Agreement {
     address alice_address;
     address bob_address;
 
-    constructor(address _bob) public {
-        alice_address = msg.sender;
-        bob_address = _bob;
-    }
+    // constructor(address _bob) public {
+    //     alice_address = msg.sender;
+    //     bob_address = _bob;
+    // }
 
     // Precondition G
     function deposit() public payable returns (int256) {
@@ -21,7 +25,7 @@ contract Agreement {
             msg.sender == alice_address || msg.sender == bob_address,
             "Sender must only be Alice or Bob"
         );
-        require(msg.value > 1, "Sender must have at least 1ETH"); // not sure if WEI == ETH?
+        require(msg.value > 1 ether, "Sender must have at least 1ETH"); // not sure if WEI == ETH?
 
         if (msg.sender == alice_address) {
             alice_committed = true;

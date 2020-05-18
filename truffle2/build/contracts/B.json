@@ -1,0 +1,304 @@
+{
+  "contractName": "B",
+  "abi": [
+    {
+      "constant": true,
+      "inputs": [],
+      "name": "helloWorld",
+      "outputs": [
+        {
+          "internalType": "string",
+          "name": "",
+          "type": "string"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "pure",
+      "type": "function"
+    }
+  ],
+  "metadata": "{\"compiler\":{\"version\":\"0.5.16+commit.9c3226ce\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"constant\":true,\"inputs\":[],\"name\":\"helloWorld\",\"outputs\":[{\"internalType\":\"string\",\"name\":\"\",\"type\":\"string\"}],\"payable\":false,\"stateMutability\":\"pure\",\"type\":\"function\"}],\"devdoc\":{\"methods\":{}},\"userdoc\":{\"methods\":{}}},\"settings\":{\"compilationTarget\":{\"/home/paris/DeFi/truffle2/contracts/B.sol\":\"B\"},\"evmVersion\":\"istanbul\",\"libraries\":{},\"optimizer\":{\"enabled\":false,\"runs\":200},\"remappings\":[]},\"sources\":{\"/home/paris/DeFi/truffle2/contracts/B.sol\":{\"keccak256\":\"0x2296ff94f0ec56ca2756d67feaf0ef12d4219284ae01cf8fae16339616a8e110\",\"urls\":[\"bzz-raw://c7521619bf498b8f46ad31c158445ca6c4912126e23902982352363f905e75e7\",\"dweb:/ipfs/QmetE3DeT54ktwKveJ2RiG4LUExMuC3JXL83W85jgoZ2Mx\"]}},\"version\":1}",
+  "bytecode": "0x608060405234801561001057600080fd5b5061011d806100206000396000f3fe6080604052348015600f57600080fd5b506004361060285760003560e01c8063c605f76c14602d575b600080fd5b603360ab565b6040518080602001828103825283818151815260200191508051906020019080838360005b8381101560715780820151818401526020810190506058565b50505050905090810190601f168015609d5780820380516001836020036101000a031916815260200191505b509250505060405180910390f35b60606040518060400160405280600a81526020017f48656c6c6f576f726c640000000000000000000000000000000000000000000081525090509056fea265627a7a723158205013455089cc53ce6c8033d6fc2ed38fdc70dbfb8b13e433bd4e742eb37535a164736f6c63430005100032",
+  "deployedBytecode": "0x6080604052348015600f57600080fd5b506004361060285760003560e01c8063c605f76c14602d575b600080fd5b603360ab565b6040518080602001828103825283818151815260200191508051906020019080838360005b8381101560715780820151818401526020810190506058565b50505050905090810190601f168015609d5780820380516001836020036101000a031916815260200191505b509250505060405180910390f35b60606040518060400160405280600a81526020017f48656c6c6f576f726c640000000000000000000000000000000000000000000081525090509056fea265627a7a723158205013455089cc53ce6c8033d6fc2ed38fdc70dbfb8b13e433bd4e742eb37535a164736f6c63430005100032",
+  "sourceMap": "35:115:2:-;;;;8:9:-1;5:2;;;30:1;27;20:12;5:2;35:115:2;;;;;;;",
+  "deployedSourceMap": "35:115:2:-;;;;8:9:-1;5:2;;;30:1;27;20:12;5:2;35:115:2;;;;;;;;;;;;;;;;;;;52:96;;;:::i;:::-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;23:1:-1;8:100;33:3;30:1;27:10;8:100;;;99:1;94:3;90:11;84:18;80:1;75:3;71:11;64:39;52:2;49:1;45:10;40:15;;8:100;;;12:14;52:96:2;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;97:13;122:19;;;;;;;;;;;;;;;;;;;52:96;:::o",
+  "source": "pragma solidity >=0.4.21 <0.7.0;\n\n\ncontract B {\n    function helloWorld() external pure returns (string memory) {\n        return \"HelloWorld\";\n    }\n}\n",
+  "sourcePath": "/home/paris/DeFi/truffle2/contracts/B.sol",
+  "ast": {
+    "absolutePath": "/home/paris/DeFi/truffle2/contracts/B.sol",
+    "exportedSymbols": {
+      "B": [
+        116
+      ]
+    },
+    "id": 117,
+    "nodeType": "SourceUnit",
+    "nodes": [
+      {
+        "id": 107,
+        "literals": [
+          "solidity",
+          ">=",
+          "0.4",
+          ".21",
+          "<",
+          "0.7",
+          ".0"
+        ],
+        "nodeType": "PragmaDirective",
+        "src": "0:32:2"
+      },
+      {
+        "baseContracts": [],
+        "contractDependencies": [],
+        "contractKind": "contract",
+        "documentation": null,
+        "fullyImplemented": true,
+        "id": 116,
+        "linearizedBaseContracts": [
+          116
+        ],
+        "name": "B",
+        "nodeType": "ContractDefinition",
+        "nodes": [
+          {
+            "body": {
+              "id": 114,
+              "nodeType": "Block",
+              "src": "112:36:2",
+              "statements": [
+                {
+                  "expression": {
+                    "argumentTypes": null,
+                    "hexValue": "48656c6c6f576f726c64",
+                    "id": 112,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": true,
+                    "kind": "string",
+                    "lValueRequested": false,
+                    "nodeType": "Literal",
+                    "src": "129:12:2",
+                    "subdenomination": null,
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_stringliteral_7c5ea36004851c764c44143b1dcb59679b11c9a68e5f41497f6cf3d480715331",
+                      "typeString": "literal_string \"HelloWorld\""
+                    },
+                    "value": "HelloWorld"
+                  },
+                  "functionReturnParameters": 111,
+                  "id": 113,
+                  "nodeType": "Return",
+                  "src": "122:19:2"
+                }
+              ]
+            },
+            "documentation": null,
+            "id": 115,
+            "implemented": true,
+            "kind": "function",
+            "modifiers": [],
+            "name": "helloWorld",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 108,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "71:2:2"
+            },
+            "returnParameters": {
+              "id": 111,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 110,
+                  "name": "",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 115,
+                  "src": "97:13:2",
+                  "stateVariable": false,
+                  "storageLocation": "memory",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_string_memory_ptr",
+                    "typeString": "string"
+                  },
+                  "typeName": {
+                    "id": 109,
+                    "name": "string",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "97:6:2",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_string_storage_ptr",
+                      "typeString": "string"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "96:15:2"
+            },
+            "scope": 116,
+            "src": "52:96:2",
+            "stateMutability": "pure",
+            "superFunction": null,
+            "visibility": "external"
+          }
+        ],
+        "scope": 117,
+        "src": "35:115:2"
+      }
+    ],
+    "src": "0:151:2"
+  },
+  "legacyAST": {
+    "absolutePath": "/home/paris/DeFi/truffle2/contracts/B.sol",
+    "exportedSymbols": {
+      "B": [
+        116
+      ]
+    },
+    "id": 117,
+    "nodeType": "SourceUnit",
+    "nodes": [
+      {
+        "id": 107,
+        "literals": [
+          "solidity",
+          ">=",
+          "0.4",
+          ".21",
+          "<",
+          "0.7",
+          ".0"
+        ],
+        "nodeType": "PragmaDirective",
+        "src": "0:32:2"
+      },
+      {
+        "baseContracts": [],
+        "contractDependencies": [],
+        "contractKind": "contract",
+        "documentation": null,
+        "fullyImplemented": true,
+        "id": 116,
+        "linearizedBaseContracts": [
+          116
+        ],
+        "name": "B",
+        "nodeType": "ContractDefinition",
+        "nodes": [
+          {
+            "body": {
+              "id": 114,
+              "nodeType": "Block",
+              "src": "112:36:2",
+              "statements": [
+                {
+                  "expression": {
+                    "argumentTypes": null,
+                    "hexValue": "48656c6c6f576f726c64",
+                    "id": 112,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": true,
+                    "kind": "string",
+                    "lValueRequested": false,
+                    "nodeType": "Literal",
+                    "src": "129:12:2",
+                    "subdenomination": null,
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_stringliteral_7c5ea36004851c764c44143b1dcb59679b11c9a68e5f41497f6cf3d480715331",
+                      "typeString": "literal_string \"HelloWorld\""
+                    },
+                    "value": "HelloWorld"
+                  },
+                  "functionReturnParameters": 111,
+                  "id": 113,
+                  "nodeType": "Return",
+                  "src": "122:19:2"
+                }
+              ]
+            },
+            "documentation": null,
+            "id": 115,
+            "implemented": true,
+            "kind": "function",
+            "modifiers": [],
+            "name": "helloWorld",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 108,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "71:2:2"
+            },
+            "returnParameters": {
+              "id": 111,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 110,
+                  "name": "",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 115,
+                  "src": "97:13:2",
+                  "stateVariable": false,
+                  "storageLocation": "memory",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_string_memory_ptr",
+                    "typeString": "string"
+                  },
+                  "typeName": {
+                    "id": 109,
+                    "name": "string",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "97:6:2",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_string_storage_ptr",
+                      "typeString": "string"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "96:15:2"
+            },
+            "scope": 116,
+            "src": "52:96:2",
+            "stateMutability": "pure",
+            "superFunction": null,
+            "visibility": "external"
+          }
+        ],
+        "scope": 117,
+        "src": "35:115:2"
+      }
+    ],
+    "src": "0:151:2"
+  },
+  "compiler": {
+    "name": "solc",
+    "version": "0.5.16+commit.9c3226ce.Emscripten.clang"
+  },
+  "networks": {
+    "5777": {
+      "events": {},
+      "links": {},
+      "address": "0x9B5c289dB26dD2486388381576fa518de667066B",
+      "transactionHash": "0xc640fe97527314c944caaf0c6d49d3aa8ce7d153d1ba94ade4c80f114215e9a7"
+    }
+  },
+  "schemaVersion": "3.0.21",
+  "updatedAt": "2020-05-01T04:20:01.107Z",
+  "networkType": "ethereum",
+  "devdoc": {
+    "methods": {}
+  },
+  "userdoc": {
+    "methods": {}
+  }
+}
