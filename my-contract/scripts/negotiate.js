@@ -12,16 +12,18 @@ async function main() {
     const privateKey =
         "0x28d1bfbbafe9d1d4f5a11c3c16ab6bf9084de48d99fbac4058bdfa3c80b2908f";
 
+    // const privateKey =
+    //     "0x28d1bfbbafe9d1d4f5a11c3c16ab6bf9084de48d99fbac4058bdfa3c80b2908e";
+
     const wallet = new ethers.Wallet(privateKey, provider);
-
     const contract = new ethers.Contract(address, interface.abi, wallet);
-
     console.log(await contract.getContractAddress());
-    console.log(await contract.agentSatisfy());
 
-    console.log(await contract.initAgent("Alice"));
+    const parameters = { value: 200 };
+    await contract.initAgent("Bobs", parameters);
 
-    console.log(await contract.agentSatisfy());
+    await contract.printAllAgents();
+    // console.log("Contract Balance: " + (await contract.getBalance()));
 }
 
 main()
