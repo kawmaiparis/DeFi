@@ -33,7 +33,7 @@ async function main() {
 
     const provider = new ethers.providers.JsonRpcProvider();
     const privateKey =
-        "0x5b1cf2cb9e6fd0eb5d896d177474c11b56d004aa1b15286e492c01aa604d5b2a";
+        "0x51c1aec0a603dab997dbcbaae83f071ad9d584999e1000a2b655698ed603da7c";
 
     const wallet = new ethers.Wallet(privateKey, provider);
     const daiContract = new ethers.Contract(
@@ -73,31 +73,20 @@ async function main() {
 
     console.log("-> Performing Delgate Call...");
 
-    const _data = IDssProxyActions.functions.myCustomOpenVaultFunction.encode([
-        maker.dssCdpManager.address,
-        maker.jug.address,
-        maker.ethAJoin.address,
-        maker.daiJoin.address,
-        ethers.utils.parseUnits("20", erc20.dai.decimals),
-    ]);
-
-    const ethBefore = await await wallet.getBalance();
-    const daiBefore = await daiContract.balanceOf(wallet.address);
+    const _data = IDssProxyActions.functions.getContractAddress.encode([]);
 
     // Open vault through proxy
-    await proxyContract.execute(myCustomVaultManager.address, _data, {
-        gasLimit: 2500000,
-        value: ethers.utils.parseEther("1"),
-    });
+    const ret = await proxyContract.execute(
+        myCustomVaultManager.address,
+        _data,
+        {
+            gasLimit: 2500000,
+            value: ethers.utils.parseEther("1"),
+        }
+    );
 
-    const ethAfter = await await wallet.getBalance();
-    const daiAfter = await daiContract.balanceOf(wallet.address);
-
-    const ethSpent = parseFloat(ethBefore.sub(ethAfter));
-    const daiGained = parseFloat(daiAfter.sub(daiBefore));
-
-    console.log("ethSpent: " + ethSpent);
-    console.log("daiGained: " + daiGained);
+    console.log(ret);
+    console.log("--- done ---");
 }
 
 main()

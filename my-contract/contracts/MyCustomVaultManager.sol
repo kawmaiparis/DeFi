@@ -29,16 +29,20 @@ contract MyCustomVaultManager is DssProxyActionsBase {
     function depositETH(uint256 wadD) public payable {
         require(msg.value == wadD);
         if (Agents[msg.sender].valid) {
-            address(this).transfer(wadD);
-            Agents[msg.sender].balance = wadD;
+            // address(this).transfer(wadD);
+            // Agents[msg.sender].balance = wadD;
         }
     }
 
-    function getBalance() public returns (int256 ret) {
+    function getContractAddress() public view returns (address) {
+        return address(this);
+    }
+
+    function getBalance() public returns (uint256 ret) {
         if (Agents[msg.sender].valid) {
             return Agents[msg.sender].balance;
         }
-        return -1;
+        return 0;
     }
 
     // deposit function HERE!
