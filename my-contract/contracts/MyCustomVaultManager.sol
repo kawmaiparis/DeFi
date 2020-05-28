@@ -70,8 +70,6 @@ contract MyCustomVaultManager is DssProxyActionsBase {
         address daiJoin,
         uint256 wadD
     ) public payable {
-        // check if Alice and Bob have deposited? mappings accounts -> balance
-
         // Opens ETH-A CDP
         bytes32 ilk = bytes32("ETH-A");
         uint256 cdp = open(manager, ilk, address(this));
@@ -81,8 +79,6 @@ contract MyCustomVaultManager is DssProxyActionsBase {
         // Receives ETH amount, converts it to WETH and joins it into the vat
         ethJoin_join(ethJoin, urn);
         // Locks WETH amount into the CDP and generates debt
-
-        // change msg.value to the sum of Alice and Bob's balances
         frob(
             manager,
             cdp,
