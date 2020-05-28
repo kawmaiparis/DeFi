@@ -5,6 +5,10 @@ import "@studydefi/money-legos/maker/contracts/DssProxyActionsBase.sol";
 
 
 contract MyCustomVaultManager is DssProxyActionsBase {
+    int256 agentNum = 0;
+    address[] agentAddress;
+    string[] agentName;
+
     struct Agent {
         string name;
         uint256 balance;
@@ -13,41 +17,53 @@ contract MyCustomVaultManager is DssProxyActionsBase {
 
     mapping(address => Agent) Agents;
 
-    function initAgent(address _address, string memory _name) public {
-        Agent memory agent = Agents[_address];
+    constructor() public payable {}
+
+    function initAgent(string memory _name) public payable {
+        // require(_name == "Alice" || _name == "Bob", "Sender is not recognized");
+        console.log(_name);
+        Agent memory agent = Agents[msg.sender];
         agent.name = _name;
         agent.balance = 0;
         agent.valid = true;
+        agentAddress.push(msg.sender);
+        agentName.push(_name);
+        agentNum++;
     }
 
-    function greet() public view returns (string memory) {
-        console.log("hello");
-        return "returned hello";
-    }
-
-    // deposit function for Alice and Bob to pay the contract
-    function depositETH(uint256 wadD) public payable {
-        require(msg.value == wadD);
-        if (Agents[msg.sender].valid) {
-            // address(this).transfer(wadD);
-            // Agents[msg.sender].balance = wadD;
+    function printAllAgents() public view {
+        for (uint256 i = 0; i < agentName.length; i++) {
+            console.log(agentName[i]);
         }
+    }
+
+    function deleteAgent() public {
+        delete Agents[msg.sender];
+        // have to find delete from agentAddress as well
+        // lets worry about that later
+    }
+
+    function agentSatisfy() public view returns (int256) {
+        return agentNum;
+    }
+
+    function sendEther(address payable recipient) external {
+        recipient.transfer(1 ether);
     }
 
     function getContractAddress() public view returns (address) {
         return address(this);
     }
 
-    function getBalance() public returns (uint256 ret) {
-        if (Agents[msg.sender].valid) {
-            return Agents[msg.sender].balance;
-        }
-        return 0;
+    function getBalance() public view returns (uint256) {
+        return address(this).balance;
     }
 
-    // deposit function HERE!
+    function checkValue() public payable returns (uint256) {
+        return msg.value;
+    }
 
-    function myCustomOpenVaultFunction(
+    function openAndLockETH(
         address manager,
         address jug,
         address ethJoin,
@@ -55,13 +71,6 @@ contract MyCustomVaultManager is DssProxyActionsBase {
         uint256 wadD
     ) public payable {
         // check if Alice and Bob have deposited? mappings accounts -> balance
-
-        console.log("hi");
-        console.log(manager);
-        console.log(jug);
-        console.log(ethJoin);
-        console.log(daiJoin);
-        console.log(wadD);
 
         // Opens ETH-A CDP
         bytes32 ilk = bytes32("ETH-A");
@@ -86,8 +95,5 @@ contract MyCustomVaultManager is DssProxyActionsBase {
         if (VatLike(vat).can(address(this), address(daiJoin)) == 0) {
             VatLike(vat).hope(daiJoin);
         }
-
-        // Exits DAI to the user's wallet as a token
-        DaiJoinLike(daiJoin).exit(msg.sender, wadD);
     }
 }

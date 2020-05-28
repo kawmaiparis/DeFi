@@ -2,37 +2,13 @@ const maker = require("@studydefi/money-legos/maker");
 const dappsys = require("@studydefi/money-legos/dappsys");
 const erc20 = require("@studydefi/money-legos/erc20");
 
-// install (mostly) all dependencies
-// npm install --save-dev @nomiclabs/buidler-ethers ethers @nomiclabs/buidler-waffle ethereum-waffle chai
-
-// FORK MY INFURA (broken atm)
-// npx ganache-cli -f https://mainnet.infura.io/v3/b58b6c88761446ec82f70ebc965c90e8 -i 1
-
-// FORK ETHER JS INFURA
-// npx ganache-cli -f https://mainnet.infura.io/v3/7d0d81d0919f4f05b9ab6634be01ee73 -i 1
-
-// SPAWN LOCAL NODE
-// npx buidler node
+const MCVMinterface = require("./../artifacts/MyCustomVaultManager.json");
 
 async function main() {
-    // ---------------------------- DEPLOY MY CONTRACT -------------------------------
-    const MyCustomVaultManager = await ethers.getContractFactory(
-        "MyCustomVaultManager"
-    );
-    const myCustomVaultManager = await MyCustomVaultManager.deploy();
-
-    await myCustomVaultManager.deployed();
-
-    console.log(
-        "-> MyCustomVaultManager deployed to:",
-        myCustomVaultManager.address
-    );
-
-    // ---------------------------- DEPLOYING PROXY -------------------------------
-
+    // Build Negotiator Instance
     const provider = new ethers.providers.JsonRpcProvider();
     const privateKey =
-        "0x74c25f7d17db9b4f83fea021da5e87f026a01f7e9d0d70a16b334922d67c6f20";
+        "0x04af278b33f044c70c09528716f9d65a3b000b9d2132b653231a94ef7eb6a71b";
 
     const wallet = new ethers.Wallet(privateKey, provider);
     const daiContract = new ethers.Contract(
@@ -41,31 +17,23 @@ async function main() {
         wallet
     );
 
-    const proxyRegistry = new ethers.Contract(
-        maker.proxyRegistry.address,
-        maker.proxyRegistry.abi,
-        wallet
-    );
-
-    // Build proxy if we don't have one
-    let proxyAddress = await proxyRegistry.proxies(wallet.address);
-    if (proxyAddress === "0x0000000000000000000000000000000000000000") {
-        await proxyRegistry.build({ gasLimit: 1500000 });
-        proxyAddress = await proxyRegistry.proxies(wallet.address);
-    }
-
-    console.log("-> Proxy registry deployed!");
-
-    // ------------------------------ CALLING MY CONTRACT --------------------------------
-
-    // Build Contract instance
+    // Build Proxy Contract instance
+    const proxyAddress = "0x808c02D1BF68616eE5EF06A2Df39cACb8Db119c2";
     const proxyContract = new ethers.Contract(
         proxyAddress,
         dappsys.dsProxy.abi,
         wallet
     );
 
-    // Prepare data for delegate call -> CHANGE TO USE MY CONTRACT!
+    // Build My Contract instance
+    const contractAddress = "0x83080A61498d22a2d530Dcf6DF911C4f7EeAa33D";
+    const myCustomVaultManager = new ethers.Contract(
+        contractAddress,
+        MCVMinterface.abi,
+        provider
+    );
+
+    // Prepare data for delegate call to proxy contract
     const IDssProxyActions = new ethers.utils.Interface(
         myCustomVaultManager.interface.abi
     );

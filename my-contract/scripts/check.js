@@ -1,39 +1,45 @@
-const bre = require("@nomiclabs/buidler");
 const maker = require("@studydefi/money-legos/maker");
 const dappsys = require("@studydefi/money-legos/dappsys");
 const erc20 = require("@studydefi/money-legos/erc20");
 
-// install (mostly) all dependencies
-// npm install --save-dev @nomiclabs/buidler-ethers ethers @nomiclabs/buidler-waffle ethereum-waffle chai
-
-// FORK MY INFURA (broken atm)
-// npx ganache-cli -f https://mainnet.infura.io/v3/b58b6c88761446ec82f70ebc965c90e8 -i 1
-
-// FORK ETHER JS INFURA
-// npx ganache-cli -f https://mainnet.infura.io/v3/7d0d81d0919f4f05b9ab6634be01ee73 -i 1
-
-// SPAWN LOCAL NODE
-// npx buidler node
-
 async function main() {
-    // ---------------------------- DEPLOY MY CONTRACT -------------------------------
+    // deploy and create MyCustomVaultManager instance
     const MyCustomVaultManager = await ethers.getContractFactory(
         "MyCustomVaultManager"
     );
-    const myCustomVaultManager = await MyCustomVaultManager.deploy();
-
+    let myCustomVaultManager = await MyCustomVaultManager.deploy();
     await myCustomVaultManager.deployed();
-
     console.log(
         "-> MyCustomVaultManager deployed to:",
         myCustomVaultManager.address
     );
 
-    // ---------------------------- DEPLOYING PROXY -------------------------------
+    console.log(
+        "MyCustomVaultManager Balance:",
+        ethers.utils.formatEther(await myCustomVaultManager.getBalance())
+    );
 
+    // // build Bob Instance
     const provider = new ethers.providers.JsonRpcProvider();
+    const bobprivateKey =
+        "0x621914e8a869d3037eb5a70a61b75c29f06626f50efc1c5a3b0eea183ddb8255";
+    const bobwallet = new ethers.Wallet(bobprivateKey, provider);
+    myCustomVaultManager = myCustomVaultManager.connect(bobwallet);
+
+    // Bob deposits to Contract
+    await myCustomVaultManager.initAgent("Bob", {
+        value: ethers.utils.parseEther("25"),
+    });
+    console.log(
+        "MyCustomVaultManager Balance:",
+        ethers.utils.formatEther(await myCustomVaultManager.getBalance())
+    );
+
+    // ---------------------------- DEPLOYING PROXY -----------------------------
+    // We need some account with some gas to deploy the proxy initially - this won't matter later.
+    // Okay, so Alice (or Bob) has to sign the initil contract but, in theory, i should be able to change the contract's logic to use its value instead of Alice's
     const privateKey =
-        "0x51c1aec0a603dab997dbcbaae83f071ad9d584999e1000a2b655698ed603da7c";
+        "0x601204dab00e8efda5545dad1bd586f79b9e62f66fce4da6661bc259dcb6e3f3"; // just some account
 
     const wallet = new ethers.Wallet(privateKey, provider);
     const daiContract = new ethers.Contract(
@@ -51,11 +57,14 @@ async function main() {
     // Build proxy if we don't have one
     let proxyAddress = await proxyRegistry.proxies(wallet.address);
     if (proxyAddress === "0x0000000000000000000000000000000000000000") {
-        await proxyRegistry.build({ gasLimit: 1500000 });
+        console.log("building proxy...");
+        await proxyRegistry.build({
+            gasLimit: 1500000,
+        });
         proxyAddress = await proxyRegistry.proxies(wallet.address);
     }
 
-    console.log("-> Proxy registry deployed!");
+    console.log("-> Proxy registry deployed to:", proxyAddress);
 
     // ------------------------------ CALLING MY CONTRACT --------------------------------
 
@@ -66,27 +75,46 @@ async function main() {
         wallet
     );
 
-    // Prepare data for delegate call -> CHANGE TO USE MY CONTRACT!
-    const IDssProxyActions = new ethers.utils.Interface(
+    // Prepare data for delegate call
+    const ProxyActions = new ethers.utils.Interface(
         myCustomVaultManager.interface.abi
     );
 
     console.log("-> Performing Delgate Call...");
 
-    const _data = IDssProxyActions.functions.getContractAddress.encode([]);
+    // Encode parameters
+    const _data = ProxyActions.functions.myCustomOpenVaultFunction.encode([
+        maker.dssCdpManager.address,
+        maker.jug.address,
+        maker.ethAJoin.address,
+        maker.daiJoin.address,
+        ethers.utils.parseUnits("20", erc20.dai.decimals),
+    ]);
+
+    // Balance before function call
+    // const ethBefore = await await wallet.getBalance();
+    // const daiBefore = await daiContract.balanceOf(wallet.address);
 
     // Open vault through proxy
-    const ret = await proxyContract.execute(
-        myCustomVaultManager.address,
-        _data,
-        {
-            gasLimit: 2500000,
-            value: ethers.utils.parseEther("1"),
-        }
-    );
+    await proxyContract.execute(myCustomVaultManager.address, _data, {
+        gasLimit: 2500000,
+        // value: ethers.utils.parseEther("25"),
+    });
 
-    console.log(ret);
-    console.log("--- done ---");
+    // Balance after function call
+    // const ethAfter = await await wallet.getBalance();
+    // const daiAfter = await daiContract.balanceOf(wallet.address);
+
+    // const ethSpent = parseFloat(ethBefore.sub(ethAfter));
+    // const daiGained = parseFloat(daiAfter.sub(daiBefore));
+
+    // console.log("ethSpent: " + ethSpent);
+    // console.log("daiGained: " + daiGained);
+
+    console.log(
+        "MyCustomVaultManager Balance:",
+        ethers.utils.formatEther(await myCustomVaultManager.getBalance())
+    );
 }
 
 main()

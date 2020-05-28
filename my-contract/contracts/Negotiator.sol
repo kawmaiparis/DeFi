@@ -16,15 +16,15 @@ contract Negotiator {
 
     mapping(address => Agent) Agents;
 
-    constructor() public {
-        console.log("Deploying a Negotiator");
-    }
-
     function getContractAddress() public view returns (address) {
         return address(this);
     }
 
-    function initAgent(string memory _name) public payable {
+    // function getProxyAddress() public view returns (address) {
+    //     return proxy.getContractAddress();
+    // }
+
+    function initAgent(string memory _name) public payable returns (uint256) {
         // require(_name == "Alice" || _name == "Bob", "Sender is not recognized");
         console.log(_name);
         Agent memory agent = Agents[msg.sender];
@@ -34,6 +34,12 @@ contract Negotiator {
         agentAddress.push(msg.sender);
         agentName.push(_name);
         agentNum++;
+
+        console.log(msg.value);
+        console.log(address(this).balance);
+        console.log(msg.value == address(this).balance);
+
+        return msg.value;
     }
 
     function printAllAgents() public view {
@@ -52,8 +58,8 @@ contract Negotiator {
         return agentNum;
     }
 
-    function sendEther(address payable recipient) external {
-        recipient.transfer(1 ether);
+    function sendEther(address payable recipient) public {
+        recipient.transfer(address(this).balance);
     }
 
     function getBalance() public view returns (uint256) {
