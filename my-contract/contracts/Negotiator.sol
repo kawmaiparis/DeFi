@@ -1,9 +1,11 @@
 pragma solidity ^0.5.1;
 
 import "@nomiclabs/buidler/console.sol";
+import "./MyCustomVaultManager.sol";
 
 
 contract Negotiator {
+    MyCustomVaultManager dsProxy;
     int256 agentNum = 0;
     address[] agentAddress;
     string[] agentName;
@@ -16,13 +18,35 @@ contract Negotiator {
 
     mapping(address => Agent) Agents;
 
+    constructor(address payable addr) public {
+        dsProxy = MyCustomVaultManager(addr);
+    }
+
     function getContractAddress() public view returns (address) {
         return address(this);
     }
 
-    // function getProxyAddress() public view returns (address) {
-    //     return proxy.getContractAddress();
-    // }
+    function openAndLockETH(
+        address manager,
+        address jug,
+        address ethJoin,
+        address daiJoin,
+        uint256 wadD
+    ) external payable {
+        dsProxy.openAndLockETH.value(msg.value)(
+            manager,
+            jug,
+            ethJoin,
+            daiJoin,
+            wadD
+        );
+    }
+
+    function sending() public {
+        console.log("in Negotiator");
+        console.log(address(this).balance);
+        dsProxy.test.value(address(this).balance)();
+    }
 
     function initAgent(string memory _name) public payable returns (uint256) {
         // require(_name == "Alice" || _name == "Bob", "Sender is not recognized");
@@ -65,4 +89,6 @@ contract Negotiator {
     function getBalance() public view returns (uint256) {
         return address(this).balance;
     }
+
+    function() external payable {}
 }

@@ -2,8 +2,12 @@ usePlugin("@nomiclabs/buidler-waffle");
 usePlugin("@nomiclabs/buidler-web3");
 usePlugin("@nomiclabs/buidler-ethers");
 
-// This is a sample Buidler task. To learn how to create your own go to
-// https://buidler.dev/guides/create-task.html
+const INFURA_PROJECT_URL =
+    "https://kovan.infura.io/v3/7d0d81d0919f4f05b9ab6634be01ee73";
+
+const KOVAN_PRIVATE_KEY =
+    "0x05d6e90a4668fdcdfa03dcb6ac5f3f5b5e4d06070cd92a488de464e39587566b";
+
 task("accounts", "Prints the list of accounts", async () => {
     const accounts = await ethers.getSigners();
 
@@ -21,13 +25,17 @@ task("balance", "Prints an account's balance")
         console.log(web3.utils.fromWei(balance, "ether"), "ETH");
     });
 
-// You have to export an object to set up your config
-// This object can have the following optional entries:
-// defaultNetwork, networks, solc, and paths.
-// Go to https://buidler.dev/config/ to learn more
 module.exports = {
-    // This is a sample solc configuration that specifies which version of solc to use
     solc: {
         version: "0.5.15",
+    },
+    networks: {
+        localhost: {
+            timeout: 0,
+        },
+        kovan: {
+            url: INFURA_PROJECT_URL,
+            accounts: [KOVAN_PRIVATE_KEY],
+        },
     },
 };

@@ -1,7 +1,7 @@
 pragma solidity ^0.5.0;
 
+import "./DssProxyActionsBase.sol";
 import "@nomiclabs/buidler/console.sol";
-import "@studydefi/money-legos/maker/contracts/DssProxyActionsBase.sol";
 
 
 contract MyCustomVaultManager is DssProxyActionsBase {
@@ -21,7 +21,6 @@ contract MyCustomVaultManager is DssProxyActionsBase {
 
     function initAgent(string memory _name) public payable {
         // require(_name == "Alice" || _name == "Bob", "Sender is not recognized");
-        console.log(_name);
         Agent memory agent = Agents[msg.sender];
         agent.name = _name;
         agent.balance = 0;
@@ -33,7 +32,7 @@ contract MyCustomVaultManager is DssProxyActionsBase {
 
     function printAllAgents() public view {
         for (uint256 i = 0; i < agentName.length; i++) {
-            console.log(agentName[i]);
+            // console.log(agentName[i]);
         }
     }
 
@@ -56,11 +55,30 @@ contract MyCustomVaultManager is DssProxyActionsBase {
     }
 
     function getBalance() public view returns (uint256) {
+        // console.log("msg value:", msg.value);
+        // console.log("balanace:", address(this).balance);
         return address(this).balance;
     }
 
     function checkValue() public payable returns (uint256) {
         return msg.value;
+    }
+
+    function test() public payable {
+        // console.log("In MyCustomVaultManger");
+        // console.log(msg.value);
+    }
+
+    function getHi() public view returns (uint256) {
+        return 0;
+    }
+
+    function check() public payable returns (uint256) {
+        require(20000000000000000000 == address(this).balance, "YO WHADDUP");
+        if (20000000000000000000 == address(this).balance) {
+            console.log("works!");
+        }
+        return 0;
     }
 
     function openAndLockETH(
@@ -69,20 +87,21 @@ contract MyCustomVaultManager is DssProxyActionsBase {
         address ethJoin,
         address daiJoin,
         uint256 wadD
-    ) public payable {
+    ) public payable returns (uint256) {
         // Opens ETH-A CDP
+
         bytes32 ilk = bytes32("ETH-A");
         uint256 cdp = open(manager, ilk, address(this));
 
         address urn = ManagerLike(manager).urns(cdp);
         address vat = ManagerLike(manager).vat();
         // Receives ETH amount, converts it to WETH and joins it into the vat
-        ethJoin_join(ethJoin, urn);
+        ethJoin_join(ethJoin, urn, address(this).balance);
         // Locks WETH amount into the CDP and generates debt
         frob(
             manager,
             cdp,
-            toInt(msg.value),
+            toInt(address(this).balance),
             _getDrawDart(vat, jug, urn, ilk, wadD)
         );
         // Moves the DAI amount (balance in the vat in rad) to proxy's address
@@ -91,5 +110,36 @@ contract MyCustomVaultManager is DssProxyActionsBase {
         if (VatLike(vat).can(address(this), address(daiJoin)) == 0) {
             VatLike(vat).hope(daiJoin);
         }
+
+        // Exits DAI to the user's wallet as a token
+        DaiJoinLike(daiJoin).exit(msg.sender, wadD);
     }
+
+    function wipeAllAndFreeETH(
+        address manager,
+        address ethJoin,
+        address daiJoin,
+        uint256 cdp,
+        uint256 wadC
+    ) public {
+        address vat = ManagerLike(manager).vat();
+        address urn = ManagerLike(manager).urns(cdp);
+        bytes32 ilk = ManagerLike(manager).ilks(cdp);
+        (, uint256 art) = VatLike(vat).urns(ilk, urn);
+
+        // Joins DAI amount into the vat
+        daiJoin_join(daiJoin, urn, _getWipeAllWad(vat, urn, urn, ilk));
+        // Paybacks debt to the CDP and unlocks WETH amount from it
+        frob(manager, cdp, -toInt(wadC), -int256(art));
+        // Moves the amount from the CDP urn to proxy's address
+        flux(manager, cdp, address(this), wadC);
+        // Exits WETH amount to proxy address as a token
+        GemJoinLike(ethJoin).exit(address(this), wadC);
+        // Converts WETH to ETH
+        GemJoinLike(ethJoin).gem().withdraw(wadC);
+        // Sends ETH back to the user's wallet
+        msg.sender.transfer(wadC);
+    }
+
+    function() external payable {}
 }
