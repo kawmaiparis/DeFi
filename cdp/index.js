@@ -12,16 +12,11 @@ const PRIVATE_KEY =
 
 const URL = "https://kovan.infura.io/v3/b839d484af444e308e098f46555e0260";
 
-// test function
-async function hello() {
-    console.log("hello!");
-}
-
 async function invest(EthToDeposit, DaiToDraw) {
     try {
         const maker = await Maker.create("http", {
             privateKey: PRIVATE_KEY,
-            url: URL
+            url: URL,
         });
 
         // const dai = maker.service("token").getToken("DAI");
@@ -62,7 +57,7 @@ async function payback(DaiToPay, cdp) {
     try {
         const maker = await Maker.create("http", {
             privateKey: PRIVATE_KEY,
-            url: URL
+            url: URL,
         });
 
         // const DAI = maker.service("token").getToken("DAI");

@@ -1,0 +1,354 @@
+[
+    {
+        "constant": true,
+        "inputs": [],
+        "name": "getBalance",
+        "outputs": [{ "name": "", "type": "uint256" }],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "constant": false,
+        "inputs": [
+            { "name": "manager", "type": "address" },
+            { "name": "cdp", "type": "uint256" },
+            { "name": "dst", "type": "address" },
+            { "name": "wad", "type": "uint256" }
+        ],
+        "name": "flux",
+        "outputs": [],
+        "payable": false,
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "constant": false,
+        "inputs": [
+            { "name": "manager", "type": "address" },
+            { "name": "cdp", "type": "uint256" },
+            { "name": "usr", "type": "address" }
+        ],
+        "name": "give",
+        "outputs": [],
+        "payable": false,
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "constant": false,
+        "inputs": [
+            { "name": "manager", "type": "address" },
+            { "name": "cdp", "type": "uint256" },
+            { "name": "dst", "type": "address" },
+            { "name": "rad", "type": "uint256" }
+        ],
+        "name": "move",
+        "outputs": [],
+        "payable": false,
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "constant": true,
+        "inputs": [],
+        "name": "getContractAddress",
+        "outputs": [{ "name": "", "type": "address" }],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "constant": true,
+        "inputs": [],
+        "name": "agentSatisfy",
+        "outputs": [{ "name": "", "type": "int256" }],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "constant": false,
+        "inputs": [],
+        "name": "deleteAgent",
+        "outputs": [],
+        "payable": false,
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "constant": false,
+        "inputs": [
+            { "name": "manager", "type": "address" },
+            { "name": "cdp", "type": "uint256" },
+            { "name": "dst", "type": "address" }
+        ],
+        "name": "quit",
+        "outputs": [],
+        "payable": false,
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "constant": false,
+        "inputs": [{ "name": "recipient", "type": "address" }],
+        "name": "sendEther",
+        "outputs": [],
+        "payable": false,
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "constant": false,
+        "inputs": [
+            { "name": "proxyRegistry", "type": "address" },
+            { "name": "manager", "type": "address" },
+            { "name": "cdp", "type": "uint256" },
+            { "name": "dst", "type": "address" }
+        ],
+        "name": "giveToProxy",
+        "outputs": [],
+        "payable": false,
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "constant": false,
+        "inputs": [
+            { "name": "manager", "type": "address" },
+            { "name": "jug", "type": "address" },
+            { "name": "ethJoin", "type": "address" },
+            { "name": "daiJoin", "type": "address" },
+            { "name": "wadD", "type": "uint256" }
+        ],
+        "name": "openAndLockETH",
+        "outputs": [{ "name": "", "type": "uint256" }],
+        "payable": true,
+        "stateMutability": "payable",
+        "type": "function"
+    },
+    {
+        "constant": false,
+        "inputs": [],
+        "name": "checkValue",
+        "outputs": [{ "name": "", "type": "uint256" }],
+        "payable": true,
+        "stateMutability": "payable",
+        "type": "function"
+    },
+    {
+        "constant": false,
+        "inputs": [
+            { "name": "manager", "type": "address" },
+            { "name": "usr", "type": "address" },
+            { "name": "ok", "type": "uint256" }
+        ],
+        "name": "urnAllow",
+        "outputs": [],
+        "payable": false,
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "constant": false,
+        "inputs": [
+            { "name": "manager", "type": "address" },
+            { "name": "ilk", "type": "bytes32" },
+            { "name": "usr", "type": "address" }
+        ],
+        "name": "open",
+        "outputs": [{ "name": "cdp", "type": "uint256" }],
+        "payable": false,
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "constant": false,
+        "inputs": [
+            { "name": "manager", "type": "address" },
+            { "name": "ethJoin", "type": "address" },
+            { "name": "daiJoin", "type": "address" },
+            { "name": "cdp", "type": "uint256" },
+            { "name": "wadC", "type": "uint256" }
+        ],
+        "name": "wipeAllAndFreeETH",
+        "outputs": [],
+        "payable": false,
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "constant": false,
+        "inputs": [
+            { "name": "manager", "type": "address" },
+            { "name": "cdpSrc", "type": "uint256" },
+            { "name": "cdpOrg", "type": "uint256" }
+        ],
+        "name": "shift",
+        "outputs": [],
+        "payable": false,
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "constant": false,
+        "inputs": [
+            { "name": "apt", "type": "address" },
+            { "name": "urn", "type": "address" },
+            { "name": "wad", "type": "uint256" },
+            { "name": "transferFrom", "type": "bool" }
+        ],
+        "name": "gemJoin_join",
+        "outputs": [],
+        "payable": false,
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "constant": false,
+        "inputs": [],
+        "name": "check",
+        "outputs": [{ "name": "", "type": "uint256" }],
+        "payable": true,
+        "stateMutability": "payable",
+        "type": "function"
+    },
+    {
+        "constant": false,
+        "inputs": [
+            { "name": "manager", "type": "address" },
+            { "name": "cdp", "type": "uint256" },
+            { "name": "dink", "type": "int256" },
+            { "name": "dart", "type": "int256" }
+        ],
+        "name": "frob",
+        "outputs": [],
+        "payable": false,
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "constant": false,
+        "inputs": [
+            { "name": "obj", "type": "address" },
+            { "name": "usr", "type": "address" }
+        ],
+        "name": "nope",
+        "outputs": [],
+        "payable": false,
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "constant": false,
+        "inputs": [
+            { "name": "obj", "type": "address" },
+            { "name": "usr", "type": "address" }
+        ],
+        "name": "hope",
+        "outputs": [],
+        "payable": false,
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "constant": false,
+        "inputs": [
+            { "name": "manager", "type": "address" },
+            { "name": "cdp", "type": "uint256" },
+            { "name": "usr", "type": "address" },
+            { "name": "ok", "type": "uint256" }
+        ],
+        "name": "cdpAllow",
+        "outputs": [],
+        "payable": false,
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "constant": false,
+        "inputs": [
+            { "name": "gem", "type": "address" },
+            { "name": "dst", "type": "address" },
+            { "name": "wad", "type": "uint256" }
+        ],
+        "name": "transfer",
+        "outputs": [],
+        "payable": false,
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "constant": false,
+        "inputs": [
+            { "name": "apt", "type": "address" },
+            { "name": "urn", "type": "address" },
+            { "name": "wad", "type": "uint256" }
+        ],
+        "name": "daiJoin_join",
+        "outputs": [],
+        "payable": false,
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "constant": true,
+        "inputs": [],
+        "name": "printAllAgents",
+        "outputs": [],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "constant": false,
+        "inputs": [
+            { "name": "apt", "type": "address" },
+            { "name": "urn", "type": "address" },
+            { "name": "amount", "type": "uint256" }
+        ],
+        "name": "ethJoin_join",
+        "outputs": [],
+        "payable": true,
+        "stateMutability": "payable",
+        "type": "function"
+    },
+    {
+        "constant": false,
+        "inputs": [{ "name": "_name", "type": "string" }],
+        "name": "initAgent",
+        "outputs": [],
+        "payable": true,
+        "stateMutability": "payable",
+        "type": "function"
+    },
+    {
+        "constant": false,
+        "inputs": [
+            { "name": "manager", "type": "address" },
+            { "name": "src", "type": "address" },
+            { "name": "cdp", "type": "uint256" }
+        ],
+        "name": "enter",
+        "outputs": [],
+        "payable": false,
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "constant": false,
+        "inputs": [],
+        "name": "test",
+        "outputs": [],
+        "payable": true,
+        "stateMutability": "payable",
+        "type": "function"
+    },
+    {
+        "inputs": [],
+        "payable": true,
+        "stateMutability": "payable",
+        "type": "constructor"
+    },
+    { "payable": true, "stateMutability": "payable", "type": "fallback" }
+]
