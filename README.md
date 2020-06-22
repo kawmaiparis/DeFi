@@ -1,1 +1,2 @@
-# my-contract is our main repo.
+# DeFi Agents Negotiation
+my-contract is our main repo.
