@@ -24,15 +24,16 @@ async function main() {
     await myCustomVaultManager.deployed();
 
     console.log(
-        "-> MyCustomVaultManager deployed to:",
+        "  MyCustomVaultManager deployed to:",
         myCustomVaultManager.address
     );
+    console.log("");
 
     // ---------------------------- DEPLOYING PROXY -------------------------------
 
     const provider = new ethers.providers.JsonRpcProvider();
     const privateKey =
-        "0x74c25f7d17db9b4f83fea021da5e87f026a01f7e9d0d70a16b334922d67c6f20";
+        "0x04d9096296be352b4cd0de36da9a65f0f7947f935484d40fdae8dbe8bc50418d";
 
     const wallet = new ethers.Wallet(privateKey, provider);
     const daiContract = new ethers.Contract(
@@ -54,7 +55,8 @@ async function main() {
         proxyAddress = await proxyRegistry.proxies(wallet.address);
     }
 
-    console.log("-> Proxy registry deployed!");
+    console.log("  DSProxy deployed to Maker's Proxy Registry");
+    console.log("");
 
     // ------------------------------ CALLING MY CONTRACT --------------------------------
 
@@ -70,9 +72,11 @@ async function main() {
         myCustomVaultManager.interface.abi
     );
 
-    console.log("-> Performing Delgate Call...");
+    console.log("  Performing Delgate Call...");
+    console.log("  -> Locking 1 ETH and Drawing 20 DAI");
+    console.log("");
 
-    const _data = IDssProxyActions.functions.myCustomOpenVaultFunction.encode([
+    const _data = IDssProxyActions.functions.openAndLockETH.encode([
         maker.dssCdpManager.address,
         maker.jug.address,
         maker.ethAJoin.address,
@@ -95,8 +99,8 @@ async function main() {
     const ethSpent = parseFloat(ethBefore.sub(ethAfter));
     const daiGained = parseFloat(daiAfter.sub(daiBefore));
 
-    console.log("ethSpent: " + ethSpent);
-    console.log("daiGained: " + daiGained);
+    console.log("  ethSpent: " + ethSpent);
+    console.log("  daiGained: " + daiGained);
 }
 
 main()

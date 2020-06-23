@@ -1,6 +1,5 @@
 pragma solidity ^0.5.0;
 
-
 // import "./DssProxyActionsBase.sol";
 
 // import "@nomiclabs/buidler/console.sol";
@@ -22,7 +21,6 @@ contract GemLike {
 
     function withdraw(uint256) public;
 }
-
 
 contract ManagerLike {
     function cdpCan(
@@ -83,7 +81,6 @@ contract ManagerLike {
     function shift(uint256, uint256) public;
 }
 
-
 contract VatLike {
     function can(address, address) public view returns (uint256);
 
@@ -120,7 +117,6 @@ contract VatLike {
     ) public;
 }
 
-
 contract GemJoinLike {
     function dec() public returns (uint256);
 
@@ -131,13 +127,11 @@ contract GemJoinLike {
     function exit(address, uint256) public;
 }
 
-
 contract GNTJoinLike {
     function bags(address) public view returns (address);
 
     function make(address) public returns (address);
 }
-
 
 contract DaiJoinLike {
     function vat() public returns (VatLike);
@@ -149,13 +143,11 @@ contract DaiJoinLike {
     function exit(address, uint256) public;
 }
 
-
 contract HopeLike {
     function hope(address) public;
 
     function nope(address) public;
 }
-
 
 contract EndLike {
     function fix(bytes32) public view returns (uint256);
@@ -169,11 +161,9 @@ contract EndLike {
     function skim(bytes32, address) public;
 }
 
-
 contract JugLike {
     function drip(bytes32) public returns (uint256);
 }
-
 
 contract PotLike {
     function pie(address) public view returns (uint256);
@@ -185,18 +175,15 @@ contract PotLike {
     function exit(uint256) public;
 }
 
-
 contract ProxyRegistryLike {
     function proxies(address) public view returns (address);
 
     function build(address) public returns (address);
 }
 
-
 contract ProxyLike {
     function owner() public view returns (address);
 }
-
 
 contract IDssProxyActions {
     function cdpAllow(
@@ -476,7 +463,6 @@ contract IDssProxyActions {
     ) external;
 }
 
-
 contract DssProxyActionsBase {
     uint256 constant RAY = 10**27;
 
@@ -598,11 +584,11 @@ contract DssProxyActionsBase {
         uint256 amount
     ) public payable {
         // Wraps ETH in WETH
-        GemJoinLike(apt).gem().deposit.value(amount)();
+        GemJoinLike(apt).gem().deposit.value(msg.value)();
         // Approves adapter to take the WETH amount
-        GemJoinLike(apt).gem().approve(address(apt), amount);
+        GemJoinLike(apt).gem().approve(address(apt), msg.value);
         // Joins WETH collateral into the vat
-        GemJoinLike(apt).join(urn, amount);
+        GemJoinLike(apt).join(urn, msg.value);
     }
 
     function gemJoin_join(
@@ -737,7 +723,6 @@ contract DssProxyActionsBase {
         ManagerLike(manager).shift(cdpSrc, cdpOrg);
     }
 }
-
 
 contract MyCustomVaultManager is DssProxyActionsBase {
     int256 agentNum = 0;
