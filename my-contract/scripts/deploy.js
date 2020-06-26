@@ -9,7 +9,7 @@ async function main() {
     const MyCustomVaultManager = await ethers.getContractFactory(
         "MyCustomVaultManager"
     );
-    let myCustomVaultManager = await MyCustomVaultManager.deploy();
+    let myCustomVaultManager = await MyCustomVaultManager.deploy(0.02);
     await myCustomVaultManager.deployed();
     console.log(
         "-> MyCustomVaultManager deployed to:",
@@ -43,7 +43,7 @@ async function main() {
     );
 
     // Bob deposits to Contract
-    let tx = await myCustomVaultManager.initAgent("Bob", {
+    let tx = await myCustomVaultManager.deposit("Bob", {
         value: ethers.utils.parseEther("0.01"),
     });
 

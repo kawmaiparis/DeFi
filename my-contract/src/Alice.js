@@ -11,7 +11,7 @@ const multiaddr = require("multiaddr");
 const Libp2p = require("libp2p");
 const TCP = require("libp2p-tcp");
 const { tokenize } = require("./parser");
-const { handleCommand } = require("./handleCommand");
+const { handleCommand } = require("./handleCommandA");
 const { depositToContract } = require("./contractCall");
 // const { stdinToStream, streamToConsole } = require("./stream");
 const readline = require("readline");
@@ -28,7 +28,7 @@ const SECIO = require("libp2p-secio");
 const MulticastDNS = require("libp2p-mdns");
 
 let peer = null;
-const DISCOVERY_DURATION = 7000;
+const DISCOVERY_DURATION = 5000;
 const MY_PROPOSAL = "50";
 const THEIR_PROPOSAL = "";
 const alicePrivateKey =
@@ -71,47 +71,19 @@ const createNode = async () => {
 
 const handleStart = async (node) => {
     node.on("peer:discovery", (peerInfo) => {
-        console.log("");
         console.log(
-            "  Found another agent on:",
+            "  I found someone! on:",
             chalk.blue(`${peerInfo.id.toB58String()}`)
         );
         peer = peerInfo;
-        console.log("");
     });
 
-    node.handle("/invest/1.0.1", async ({ protocol, stream }) => {
-        pipe(stream, async function (source) {
-            for await (const msg of source) {
-                console.log(`  -> Received msg: ${msg.toString()}`);
-            }
-        });
-        await setTimeout(async () => {
-            // Simulating proposal analysis
-            const { stream: stream2 } = await node.dialProtocol(
-                peer,
-                "/invest/1.0.2"
-            );
-            console.log("  Accept");
-            await pipe(["Accept"], stream2);
-            console.log("");
-        }, 8000);
+    node.on("peer:disconnect", (peerInfo) => {
+        console.log("  Peer disconnected");
     });
 
-    node.handle("/invest/1.0.3", async ({ protocol, stream }) => {
-        pipe(stream, async function (source) {
-            for await (const msg of source) {
-                console.log(`  -> Received msg: ${msg.toString()}`);
-            }
-        });
-
-        await setTimeout(async () => {
-            console.log(
-                "  Deposit 0.01 to contract 0x40577Ed667C22925f509714B307ae66B6c755c9E"
-            );
-            console.log("");
-            console.log("  Negotiation Completed");
-        }, 8000);
+    node.on("peer:disconnect", (peerInfo) => {
+        console.log("  Peer disconnected");
     });
 
     setTimeout(async () => {
@@ -123,18 +95,71 @@ const handleStart = async (node) => {
             );
             return;
         }
+        const { stream } = await node.dialProtocol(peer, "/invest/1.0.0");
 
-        const { stream: stream0 } = await node.dialProtocol(
-            peer,
-            "/negotiation/1.0.0"
-        );
-        console.log(
-            "  Dialing to them on protocol: /negotiation/1.0.0 |",
-            chalk.red.bold("Session: 1")
-        );
-        console.log("  Propose to invest 0.01 ETH");
-        await pipe(["0.01 ETH"], stream0);
-        console.log("");
+        console.log("Dialer dialed to listener on protocol: /invest/1.0.0");
+        console.log("Input your proposal");
+
+        // Send stdin to the stream
+        stdinToStream(stream);
+        // Read the stream and output to console
+        streamToConsole(stream);
+
+        function stdinToStream(stream) {
+            // Read utf-8 from stdin
+            process.stdin.setEncoding("utf8");
+            pipe(
+                // Read from stdin (the source)
+                process.stdin,
+                // Encode with length prefix (so receiving side knows how much data is coming)
+                lp.encode(),
+                // Write to the stream (the sink)
+                stream.sink
+            );
+        }
+
+        function streamToConsole(stream) {
+            pipe(
+                // Read from the stream (the source)
+                stream.source,
+                // Decode length-prefixed data
+                lp.decode(),
+                // Sink function
+                async function (source) {
+                    // For each chunk of data
+                    for await (const msg of source) {
+                        // Output the data as a utf8 string
+                        const data = msg.toString("utf8").replace("\n", "");
+                        console.log("> " + data);
+                        const tokenizedData = tokenize(data);
+
+                        if (tokenizedData == "invalid") {
+                            console.log("Invalid Command");
+                        } else {
+                            const ret = handleCommand(tokenizedData);
+                            if (ret === 1) {
+                                console.log(
+                                    "writing to smart contract with",
+                                    chalk.red.bold(MY_PROPOSAL),
+                                    "(ETH)"
+                                );
+                                depositToContract(
+                                    alicePrivateKey,
+                                    MY_PROPOSAL,
+                                    name
+                                );
+                            } else if (ret === -1) {
+                                console.log(
+                                    "Ending protocol: /invest/1.0.0 and disconnecting..."
+                                );
+                                process.exit();
+                                return -1;
+                            }
+                        }
+                    }
+                }
+            );
+        }
     }, DISCOVERY_DURATION);
 };
 

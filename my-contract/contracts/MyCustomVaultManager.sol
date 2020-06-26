@@ -1,10 +1,8 @@
 pragma solidity ^0.5.0;
 
-// import "./DssProxyActionsBase.sol";
+import "./DssProxyActionsBase.sol";
 
-// import "@nomiclabs/buidler/console.sol";
-
-// import "@nomiclabs/buidler/console.sol";
+import "@nomiclabs/buidler/console.sol";
 
 contract GemLike {
     function approve(address, uint256) public;
@@ -728,6 +726,7 @@ contract MyCustomVaultManager is DssProxyActionsBase {
     int256 agentNum = 0;
     address[] agentAddress;
     string[] agentName;
+    uint256 goal;
 
     struct Agent {
         string name;
@@ -737,10 +736,17 @@ contract MyCustomVaultManager is DssProxyActionsBase {
 
     mapping(address => Agent) Agents;
 
-    constructor() public payable {}
+    constructor(uint256 _goal) public payable {
+        goal = _goal;
+    }
 
-    function initAgent(string memory _name) public payable {
-        // require(_name == "Alice" || _name == "Bob", "Sender is not recognized");
+    // Kovan
+    address manager = "0x1476483dD8C35F25e568113C5f70249D3976ba21";
+    address jug = "0xcbB7718c9F39d05aEEDE1c472ca8Bf804b2f1EaD";
+    address ethJoin = "0x775787933e92b709f2a3C70aa87999696e74A9F8";
+    address daiJoin = "0x5AA71a3ae1C0bd6ac27A1f28e1415fFFB6F15B8c";
+
+    function deposit(string memory _name) public payable {
         Agent memory agent = Agents[msg.sender];
         agent.name = _name;
         agent.balance = 0;
@@ -748,18 +754,19 @@ contract MyCustomVaultManager is DssProxyActionsBase {
         agentAddress.push(msg.sender);
         agentName.push(_name);
         agentNum++;
+        if (agentNum == 2 && address(this).balance == goal) {
+            openAndLockETH(manager, jug, ethJoin, daiJoin);
+        }
     }
 
     function printAllAgents() public view {
         for (uint256 i = 0; i < agentName.length; i++) {
-            // console.log(agentName[i]);
+            console.log(agentName[i]);
         }
     }
 
     function deleteAgent() public {
         delete Agents[msg.sender];
-        // have to find delete from agentAddress as well
-        // lets worry about that later
     }
 
     function agentSatisfy() public view returns (int256) {
@@ -789,12 +796,8 @@ contract MyCustomVaultManager is DssProxyActionsBase {
         // console.log(msg.value);
     }
 
-    function getHi() public view returns (uint256) {
-        return 0;
-    }
-
     function check() public payable returns (uint256) {
-        require(20000000000000000000 == address(this).balance, "YO WHADDUP");
+        require(20000000000000000000 == address(this).balance, "test error");
         if (20000000000000000000 == address(this).balance) {
             // console.log("works!");
         }
@@ -805,8 +808,7 @@ contract MyCustomVaultManager is DssProxyActionsBase {
         address manager,
         address jug,
         address ethJoin,
-        address daiJoin,
-        uint256 wadD
+        address daiJoin
     ) public payable returns (uint256) {
         // Opens ETH-A CDP
 
@@ -830,9 +832,6 @@ contract MyCustomVaultManager is DssProxyActionsBase {
         if (VatLike(vat).can(address(this), address(daiJoin)) == 0) {
             VatLike(vat).hope(daiJoin);
         }
-
-        // Exits DAI to the user's wallet as a token
-        DaiJoinLike(daiJoin).exit(msg.sender, wadD);
     }
 
     function wipeAllAndFreeETH(

@@ -2,7 +2,14 @@ const Tokenizr = require("tokenizr");
 
 let lexer = new Tokenizr();
 
-const validCommands = ["deposit", "withdraw", "propose", "accept", "reject"];
+const validCommands = [
+    "deposit",
+    "withdraw",
+    "propose",
+    "accept",
+    "reject",
+    "exit",
+];
 // deposit 2
 // withdraw 9
 // agree
