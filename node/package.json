@@ -11,7 +11,7 @@
   "dependencies": {
     "it-buffer": "^0.1.1",
     "it-pipe": "^1.1.0",
-    "libp2p": "^0.27.3",
+    "libp2p": "^0.38.0",
     "libp2p-mplex": "^0.9.3",
     "libp2p-secio": "^0.12.2",
     "libp2p-tcp": "^0.14.3",
